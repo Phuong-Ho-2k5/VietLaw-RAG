@@ -42,7 +42,25 @@ Phiên bản đầu tiên tập trung vào:
 
 ## Trạng thái
 
-Dự án đang trong giai đoạn khởi tạo và thiết kế. Mã nguồn ứng dụng sẽ được phát triển theo từng milestone trong kế hoạch dự án.
+M0 (kiểm kê ZIP và báo cáo dữ liệu thô) đã được triển khai. Corpus pháp lý chưa được kiểm duyệt; mã nguồn ứng dụng sẽ được phát triển theo các milestone tiếp theo.
+
+## Kiểm kê dữ liệu M0
+
+Đặt `selected-contexts.zip` ở thư mục gốc rồi chạy:
+
+```powershell
+python -m data.inventory --zip selected-contexts.zip --output data/manifests/m0
+python -m unittest discover -s data/tests -v
+```
+
+Xem [báo cáo M0](data/manifests/m0/m0-report.md), [inventory từng JSON](data/manifests/m0/raw-inventory.jsonl) và [danh sách cách ly](data/manifests/m0/quarantine.jsonl). Trạng thái `valid` ở M0 chỉ xác nhận cấu trúc dữ liệu; chưa xác minh nguồn, hiệu lực hay nội dung pháp lý.
+
+## Tài liệu thiết kế
+
+- [Kế hoạch triển khai đã điều chỉnh](docs/PROJECT_PLAN.md)
+- [Bảng Excel theo dõi kế hoạch đã điều chỉnh](VietLaw_RAG_Project_Plan_Revised.xlsx)
+- [Quy trình dựng lại dataset từ `selected-contexts.zip`](docs/DATASET_REBUILD.md)
+- [Kiến trúc RAG trên corpus đã duyệt](docs/RAG_ARCHITECTURE.md)
 
 ## Lưu ý
 

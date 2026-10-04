@@ -1,0 +1,113 @@
+{
+  "duplicate_id_excess": 0,
+  "duplicate_link_excess": 0,
+  "duplicate_nonempty_passage_excess": 5,
+  "duplicate_nonempty_passage_groups": 4,
+  "duplicate_nonempty_passages": {
+    "60d3918098e38758a39f86d987caed2bd08a3b4bc00ad0af6d18c18f5e3ef81d": [
+      "selected-contexts/context_277743.json",
+      "selected-contexts/context_35337.json"
+    ],
+    "6939a25894f0ca82dc389935c2eee3ddf9a2d4d52315941064a6c2486c41addf": [
+      "selected-contexts/context_121575.json",
+      "selected-contexts/context_84226.json"
+    ],
+    "bf8e8ba7ae0653cf430d09c98b61b8a587a6b0844b87c0789ff28aeb45ca6ed7": [
+      "selected-contexts/context_158189.json",
+      "selected-contexts/context_184972.json",
+      "selected-contexts/context_206810.json"
+    ],
+    "fad31a1433ae01eab90cb28768cfa9086614cb826ad83e957f46ef1c5ead3eb1": [
+      "selected-contexts/context_254937.json",
+      "selected-contexts/context_280171.json"
+    ]
+  },
+  "inventory_sha256": "f0615f91dc90abc5b419c3074932675c5d212382e6b75584329949cda6868caf",
+  "max_record_bytes": 16000000,
+  "missing_name": 1125,
+  "passage_length_chars": {
+    "count": 8532,
+    "max": 5983358,
+    "median": 23110.0,
+    "min": 0,
+    "p90": 90141,
+    "p99": 285366
+  },
+  "quarantine_sha256": "9e17fea2a16d0e66970fc27a5bb23baea5a1c1f2b11e9d0f57698dae7a91f54f",
+  "quarantined": 20,
+  "reason_counts": {
+    "EMPTY_PASSAGE": 20
+  },
+  "schema_key_sets": {
+    "id,link,name,passage": 7407,
+    "id,link,passage": 1125
+  },
+  "schema_version": 1,
+  "total_files": 8532,
+  "unique_ids": 8532,
+  "unique_links": 8532,
+  "url_category_counts": {
+    "TCVN": 31,
+    "cong-van": 540,
+    "tcvn": 367,
+    "van-ban": 7594
+  },
+  "url_topic_counts": {
+    "Bao-hiem": 197,
+    "Bat-dong-san": 225,
+    "Bo-may-hanh-chinh": 1898,
+    "Chung-khoan": 54,
+    "Cong-nghe-Thuc-pham": 63,
+    "Cong-nghe-thong-tin": 350,
+    "Cong-nghiep": 42,
+    "Dau-tu": 171,
+    "Dich-vu-phap-ly": 59,
+    "Dien-dien-tu": 18,
+    "Doanh-nghiep": 375,
+    "Giao-duc": 403,
+    "Giao-thong": 34,
+    "Giao-thong-Van-tai": 242,
+    "Hoa-chat": 8,
+    "Ke-toan-Kiem-toan": 145,
+    "Lao-dong-Tien-luong": 459,
+    "Linh-vuc-khac": 220,
+    "Nong-nghiep": 101,
+    "Quyen-dan-su": 130,
+    "So-huu-tri-tue": 34,
+    "Tai-chinh-nha-nuoc": 316,
+    "Tai-nguyen-Moi-truong": 318,
+    "The-thao-Y-te": 433,
+    "Thu-tuc-To-tung": 119,
+    "Thue-Phi-Le-Phi": 375,
+    "Thuong-mai": 465,
+    "Tien-te-Ngan-hang": 298,
+    "Trach-nhiem-hinh-su": 100,
+    "Van-hoa-Xa-hoi": 310,
+    "Vi-pham-hanh-chinh": 87,
+    "Xay-dung": 59,
+    "Xay-dung-Do-thi": 178,
+    "Xuat-nhap-khau": 192,
+    "bao-hiem": 5,
+    "bat-dong-san": 1,
+    "bo-may-hanh-chinh": 5,
+    "cong-nghe-thong-tin": 1,
+    "dich-vu-phap-ly": 1,
+    "dien-dien-tu": 1,
+    "doanh-nghiep": 2,
+    "giao-duc": 2,
+    "giao-thong-van-tai": 1,
+    "ke-toan-kiem-toan": 1,
+    "lao-dong-tien-luong": 9,
+    "linh-vuc-khac": 2,
+    "tai-chinh-nha-nuoc": 6,
+    "the-thao-y-te": 8,
+    "thu-tuc-to-tung": 1,
+    "thue-phi-le-phi": 3,
+    "thuong-mai": 1,
+    "xay-dung-do-thi": 1,
+    "xuat-nhap-khau": 3
+  },
+  "valid": 8512,
+  "zip_file": "selected-contexts.zip",
+  "zip_sha256": "48100aad58f3827bd25efd181487f76b00c59a9d1a11ba27c67bbeb030de2723"
+}
