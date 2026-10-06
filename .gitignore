@@ -3,3 +3,5 @@ __pycache__/
 ~$*.xlsx
 /selected-contexts.zip
 /docs
+/data/manifests/m1/prepared/
+/data/sources/
