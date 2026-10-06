@@ -1,0 +1,26 @@
+{
+  "active_count": 1,
+  "as_of_dates": [
+    "2026-02-12"
+  ],
+  "chunk_count": 10,
+  "m1_complete": true,
+  "manifest_hash": "6ebc3836a333f2239e524d6016c0bdf7c11abe6751c4a1b9cd01185e74fb84b7",
+  "pending_count": 2287,
+  "quarantine_count": 8531,
+  "reason_counts": {
+    "EMPTY_PASSAGE": 20,
+    "NO_TOPIC_SIGNAL": 6224,
+    "PENDING_REVIEW": 2287
+  },
+  "structure_sample_counts": {
+    "Bộ luật": 10
+  },
+  "supported_topics": [
+    "contract",
+    "hours_rest",
+    "probation",
+    "termination",
+    "wages"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "candidate_sha256": "5e96a1f0bce6c50cd707d18a93015baf43a4b651980c059e0b9d06d047fb4449",
+  "code_sha256": "b64d5794cd72cc6e87dc3e438bcfc686874340af0a73745a86d1bfe574d18cdd",
+  "config": {
+    "chunk_policy": "complete-reviewed-clause-or-unnumbered-article",
+    "core_record_ids": [],
+    "jsonl_hashing": "canonical-jsonl-utf8",
+    "max_record_bytes": 16000000,
+    "minimum_structure_samples_per_type": 10,
+    "normalization": "NFC/newlines/blank-lines-with-raw-map",
+    "topic_phrases": {
+      "contract": [
+        "hop-dong-lao-dong",
+        "hợp đồng lao động"
+      ],
+      "hours_rest": [
+        "thoi-gio-lam-viec",
+        "thời giờ làm việc",
+        "nghỉ ngơi",
+        "nghi-phep"
+      ],
+      "probation": [
+        "thu-viec",
+        "thử việc"
+      ],
+      "termination": [
+        "cham-dut-hop-dong",
+        "chấm dứt hợp đồng",
+        "sa thải"
+      ],
+      "wages": [
+        "tien-luong",
+        "tiền lương",
+        "trả lương"
+      ]
+    }
+  },
+  "decision_counts": {
+    "candidate": 2288,
+    "not_prioritized": 6224,
+    "quarantined": 20
+  },
+  "inventory_sha256": "82f58445b33b14ef77c65410fc0c8bdb0902124dfab22ae4b2dc4649ddff0da1",
+  "pipeline_version": "m1-v2",
+  "schema_version": 2,
+  "topic_counts": {
+    "contract": 845,
+    "hours_rest": 201,
+    "probation": 123,
+    "termination": 490,
+    "wages": 1401
+  },
+  "total": 8532,
+  "url_labor_branch": 468,
+  "zip_sha256": "48100aad58f3827bd25efd181487f76b00c59a9d1a11ba27c67bbeb030de2723"
+}
