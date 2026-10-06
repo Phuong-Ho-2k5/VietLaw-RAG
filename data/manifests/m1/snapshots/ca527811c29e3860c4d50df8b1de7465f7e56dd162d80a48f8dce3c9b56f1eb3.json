@@ -1,0 +1,10 @@
+{
+  "active": false,
+  "candidate_sha256": "e9bca7c0d0c4e73eed43226aa3338fbfcbf2ba756da55be11cf36fa0575d4ab4",
+  "chunks": [],
+  "documents": [],
+  "manifest_hash": "ca527811c29e3860c4d50df8b1de7465f7e56dd162d80a48f8dce3c9b56f1eb3",
+  "review_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 1,
+  "zip_sha256": "48100aad58f3827bd25efd181487f76b00c59a9d1a11ba27c67bbeb030de2723"
+}

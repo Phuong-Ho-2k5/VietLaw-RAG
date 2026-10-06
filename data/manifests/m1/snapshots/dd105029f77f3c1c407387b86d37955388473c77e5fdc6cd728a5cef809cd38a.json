@@ -1,0 +1,48 @@
+{
+  "active": false,
+  "approved_at": null,
+  "candidate_sha256": "c4af92a656ae3e1921011689fcd3e3cb639c783c16e193032fedaebd95ea2e44",
+  "chunks": [],
+  "code_sha256": "c417b7e332d5625e24fa621e6d39ead60fcd5ba6b239eb086e0624e405b90c37",
+  "config": {
+    "chunk_policy": "complete-reviewed-clause-or-unnumbered-article",
+    "core_record_ids": [],
+    "max_record_bytes": 16000000,
+    "minimum_structure_samples_per_type": 10,
+    "normalization": "NFC/newlines/blank-lines-with-raw-map",
+    "topic_phrases": {
+      "contract": [
+        "hop-dong-lao-dong",
+        "hợp đồng lao động"
+      ],
+      "hours_rest": [
+        "thoi-gio-lam-viec",
+        "thời giờ làm việc",
+        "nghỉ ngơi",
+        "nghi-phep"
+      ],
+      "probation": [
+        "thu-viec",
+        "thử việc"
+      ],
+      "termination": [
+        "cham-dut-hop-dong",
+        "chấm dứt hợp đồng",
+        "sa thải"
+      ],
+      "wages": [
+        "tien-luong",
+        "tiền lương",
+        "trả lương"
+      ]
+    }
+  },
+  "documents": [],
+  "inventory_sha256": "6171c8ef6f2c4a661735ebd6e6f125421122e5cc8c2c3807f272e445965c0668",
+  "manifest_hash": "dd105029f77f3c1c407387b86d37955388473c77e5fdc6cd728a5cef809cd38a",
+  "pipeline_version": "m1-v2",
+  "review_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "schema_version": 2,
+  "supported_topics": [],
+  "zip_sha256": "48100aad58f3827bd25efd181487f76b00c59a9d1a11ba27c67bbeb030de2723"
+}

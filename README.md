@@ -42,7 +42,19 @@ Phiên bản đầu tiên tập trung vào:
 
 ## Trạng thái
 
-M0 (kiểm kê ZIP và báo cáo dữ liệu thô) đã được triển khai. Corpus pháp lý chưa được kiểm duyệt; mã nguồn ứng dụng sẽ được phát triển theo các milestone tiếp theo.
+M0 đã kiểm kê ZIP; M1 đã tạo corpus v1 gồm 10 chunk được đối chiếu nguồn, thuộc đủ 5 chủ đề và pin phạm vi pháp luật tại **12/02/2026**. Reviewer được ghi rõ là Codex. Đây là corpus lõi nhỏ; các ứng viên còn lại tiếp tục nằm trong hàng rà soát. Mã nguồn ứng dụng sẽ được phát triển theo các milestone tiếp theo.
+
+## Pipeline dữ liệu M1
+
+Pipeline M1 lọc ứng viên từ toàn bộ text, chuẩn hóa Unicode với raw offsets, tách chương/mục/điều/khoản/điểm, rồi kiểm nguồn, hiệu lực và quyết định duyệt ở cấp unit trước khi tạo snapshot. Xem [hướng dẫn rà soát M1](data/M1_REVIEW.md).
+
+```powershell
+python -m data.m1 candidates
+python -m data.m1 prepare --raw-id 129823 --raw-id 208105 --raw-id 289397
+python -m data.m1 release
+```
+
+`prepare` tạo văn bản và mẫu chờ duyệt; điền quyết định có chứng cứ vào `data/manifests/m1/reviews.jsonl`. `release` chỉ tạo chunk từ unit được duyệt, yêu cầu tối thiểu 10 mẫu cấu trúc mỗi loại văn bản. Xem [báo cáo nghiệm thu M1](data/manifests/m1/m1-report.md) để biết phần đã triển khai và phần còn chờ kiểm nguồn/duyệt.
 
 ## Kiểm kê dữ liệu M0
 
