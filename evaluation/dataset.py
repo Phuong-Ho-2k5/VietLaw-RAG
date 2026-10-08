@@ -173,7 +173,8 @@ def validate_dataset(dev: list[dict], test: list[dict], seed: list[dict], corpus
     _require(not families['dev'] & families['test'], 'family leakage across dev/test')
     _require(len(seed) == seed_count, 'incorrect seed count')
     dev_by_id = {row['question_id']: row for row in dev}
-    _require(all(isinstance(row, dict) and row.get('question_id') in dev_by_id
+    _require(all(isinstance(row, dict) and _text(row.get('question_id'))
+                 and row['question_id'] in dev_by_id
                  and row == dev_by_id[row['question_id']] for row in seed), 'seed must be exact dev subset')
     _require(len({row['question_id'] for row in seed}) == len(seed), 'duplicate seed question')
     if min_questions >= 60:

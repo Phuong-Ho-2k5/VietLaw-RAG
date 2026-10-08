@@ -71,10 +71,11 @@ python -m unittest discover -s evaluation/tests -v
 python -m unittest discover -s data/tests -v
 ```
 
-Kết quả: **17/17 kiểm thử M2, 27/27 kiểm thử M0/M1 thành công**; validator
+Kết quả: **18/18 kiểm thử M2, 27/27 kiểm thử M0/M1 thành công**; validator
 xác minh freeze và đủ 72 câu/12 seed. Reviewer kỹ thuật độc lập đã kiểm cả
 72 bản ghi và tooling, không phát hiện lỗi Critical/Important.
 
-Còn một lỗi nhỏ để sau: seed có `question_id` sai kiểu list gây `TypeError`
-thay vì `ValueError` ở API Python; CLI vẫn từ chối với exit code 1, không
-ghi freeze lỗi. Metadata và hash frozen không thay đổi trong lượt sửa tooling.
+Lỗi seed có `question_id` sai kiểu gây `TypeError` đã được sửa: API kiểm kiểu
+trước khi tra cứu và trả `ValueError` cho ID không hợp lệ. Regression test
+bao gồm list, dict, null, số, boolean và chuỗi rỗng. Metadata và hash frozen
+không thay đổi trong lượt sửa tooling.

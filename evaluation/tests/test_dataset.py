@@ -139,6 +139,15 @@ class DatasetTests(unittest.TestCase):
             dataset.validate_dataset(self.dev, self.test, seed, self.corpus,
                                      min_questions=2, seed_count=1)
 
+    def test_seed_invalid_question_id_raises_value_error(self):
+        for invalid_id in ([], {}, None, 123, True, '', '   '):
+            with self.subTest(question_id=invalid_id):
+                seed = copy.deepcopy(self.dev)
+                seed[0]['question_id'] = invalid_id
+                with self.assertRaisesRegex(ValueError, 'seed'):
+                    dataset.validate_dataset(self.dev, self.test, seed, self.corpus,
+                                             min_questions=2, seed_count=1)
+
     def test_inactive_or_tampered_corpus_rejected(self):
         saved = copy.deepcopy(self.corpus)
         self.corpus['active'] = False

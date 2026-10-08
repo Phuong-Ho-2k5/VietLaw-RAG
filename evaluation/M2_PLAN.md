@@ -59,5 +59,6 @@ integrity control, not filesystem access control or a claim of blind evaluation.
 - Final review: independent reviewer checked all 72 records and code; no
   Critical or Important findings. Enum ValueError issue was already fixed
   while review ran; final parent-run 17/17 confirms that regression.
-- Final: minor (deferred): malformed seed `question_id=[]` raises TypeError
-  rather than ValueError in the library; CLI still rejects with exit 1.
+- Follow-up fix: malformed seed IDs now raise ValueError before dictionary
+  lookup. Regression reproduced TypeError for list/dict IDs before the fix;
+  verifies rejection of list, dict, null, numeric, boolean and empty IDs.
