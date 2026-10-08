@@ -1,0 +1,116 @@
+{
+  "articles": {
+    "dev": [
+      [
+        "45/2019/QH14",
+        "13"
+      ],
+      [
+        "45/2019/QH14",
+        "24"
+      ],
+      [
+        "45/2019/QH14",
+        "34"
+      ]
+    ],
+    "test": [
+      [
+        "45/2019/QH14",
+        "105"
+      ],
+      [
+        "45/2019/QH14",
+        "26"
+      ],
+      [
+        "45/2019/QH14",
+        "90"
+      ]
+    ]
+  },
+  "as_of_dates": [
+    "2026-02-12"
+  ],
+  "categories": {
+    "dev": {
+      "direct": 10,
+      "insufficient_evidence": 6,
+      "multi_unit": 4,
+      "out_of_scope": 2,
+      "scenario": 10,
+      "temporal": 4
+    },
+    "test": {
+      "direct": 10,
+      "insufficient_evidence": 6,
+      "multi_unit": 3,
+      "out_of_scope": 4,
+      "scenario": 11,
+      "temporal": 2
+    }
+  },
+  "corpus_sha256": "a66e92b0a16a3cc6cbc60b496d7ba5e9f19149fa247d94a09688863ded2235bb",
+  "counts": {
+    "dev": 36,
+    "seed": 12,
+    "test": 36,
+    "total": 72
+  },
+  "families": {
+    "dev": [
+      "article-13",
+      "article-24",
+      "article-34",
+      "missing-contract-form",
+      "missing-probation-duration",
+      "missing-termination-notice",
+      "outside-family-law",
+      "temporal-contract-current",
+      "temporal-probation-future"
+    ],
+    "test": [
+      "article-105",
+      "article-26",
+      "article-90",
+      "missing-annual-leave",
+      "missing-minimum-wage-rate",
+      "missing-overtime-pay",
+      "outside-criminal-law",
+      "outside-land-law",
+      "temporal-wages-history"
+    ]
+  },
+  "files": {
+    "dev.jsonl": "dc8ea27d147270ca6a2ff4af6b2e181e1f461d9b0bdb9ddf212c90117cac8293",
+    "seed.jsonl": "e67182354a8410fcf9b4ddfcec5696cf03179aa1ae046c76c08753357c5e18ac",
+    "test.jsonl": "28be98cdbacb97d12877b8ab4591c2e04f355542d0baef9d6c01348d6c4c064d"
+  },
+  "frozen": true,
+  "manifest_hash": "e959ebb7769d9be594d0fcc5bfc5f702084e4642bf59b0599ba91f26a5e84b78",
+  "release_id": "m2-v1",
+  "reviewed_at": [
+    "2026-10-08"
+  ],
+  "reviewers": [
+    "Codex (assistant; source and gold review)"
+  ],
+  "schema_version": 1,
+  "snapshot_id": "6ebc3836a333f2239e524d6016c0bdf7c11abe6751c4a1b9cd01185e74fb84b7",
+  "split_policy": "disjoint_articles_and_semantic_families; seed_is_dev_subset",
+  "test_policy": "held_out; never use test to select parameters",
+  "topics": {
+    "dev": {
+      "contract": 14,
+      "outside_scope": 2,
+      "probation": 10,
+      "termination": 10
+    },
+    "test": {
+      "hours_rest": 10,
+      "outside_scope": 4,
+      "probation": 8,
+      "wages": 14
+    }
+  }
+}

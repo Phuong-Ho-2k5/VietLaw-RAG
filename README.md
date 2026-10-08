@@ -42,7 +42,16 @@ Phiên bản đầu tiên tập trung vào:
 
 ## Trạng thái
 
-M0 đã kiểm kê ZIP; M1 đã tạo corpus v1 gồm 10 chunk được đối chiếu nguồn, thuộc đủ 5 chủ đề và pin phạm vi pháp luật tại **12/02/2026**. Reviewer được ghi rõ là Codex. Đây là corpus lõi nhỏ; các ứng viên còn lại tiếp tục nằm trong hàng rà soát. Mã nguồn ứng dụng sẽ được phát triển theo các milestone tiếp theo.
+M0 đã kiểm kê ZIP; M1 đã tạo corpus v1 gồm 10 chunk được đối chiếu nguồn, thuộc đủ 5 chủ đề và pin phạm vi pháp luật tại **12/02/2026**. M2 đã bổ sung bộ đánh giá 72 câu (36 dev/36 test), seed 12 câu lấy từ dev, gold theo điều/khoản và chunk ID, cùng validator và freeze manifest. Reviewer nội dung được ghi rõ là Codex (assistant). Đây là corpus lõi nhỏ; các ứng viên còn lại tiếp tục nằm trong hàng rà soát. Mã nguồn ứng dụng sẽ được phát triển theo các milestone tiếp theo.
+
+## Dữ liệu đánh giá M2
+
+```powershell
+python -m evaluation.dataset validate
+python -m unittest discover -s evaluation/tests -v
+```
+
+Chỉ dùng dev/seed để chọn tham số; giữ test cho đánh giá cuối. Bộ câu hỏi có 48 câu trả lời được và 24 câu cần abstain do thiếu chứng cứ, ngoài phạm vi hoặc thời điểm chưa được xác minh. Các câu cùng điều/nhóm tương đồng không xuất hiện ở cả hai tập. Xem [hướng dẫn M2](evaluation/README.md) và [báo cáo nghiệm thu](evaluation/reports/m2-report.md) để biết schema, nguồn, cách chia tập và giới hạn độ phủ.
 
 ## Pipeline dữ liệu M1
 
