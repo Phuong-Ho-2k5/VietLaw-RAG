@@ -1,0 +1,13 @@
+$kind: http-request
+order: 8000
+method: POST
+url: '{{base_url}}/api/v1/admin/jobs/{{job_id}}/retry'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 409", () => pm.response.to.have.status(409));
+
+    pm.test("retry rejects terminal success", () => pm.expect(pm.response.json().error.code).to.eql("JOB_NOT_RETRYABLE"));'

@@ -1,0 +1,21 @@
+$kind: http-request
+order: 4000
+method: POST
+url: '{{base_url}}/api/v1/auth/token'
+body:
+  type: json
+  content: '{{login_body}}'
+headers:
+- key: Content-Type
+  value: application/json
+scripts:
+- type: beforeRequest
+  language: text/javascript
+  code: pm.variables.set("login_body", JSON.stringify({username:pm.variables.get("username"),
+    password:pm.variables.get("password")}));
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    pm.test("bearer token", () => pm.expect(pm.response.json().token_type).to.eql("bearer"));
+    pm.variables.set("token", pm.response.json().access_token);'

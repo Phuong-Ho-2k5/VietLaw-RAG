@@ -1,0 +1,14 @@
+$kind: http-request
+order: 15000
+method: GET
+url: '{{base_url}}/api/v1/admin/serving-snapshots/{{serving_id}}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    pm.test("ten preserved chunks", () => pm.expect(pm.response.json().chunk_count).to.eql(10));
+    pm.test("audit exists", () => pm.expect(pm.response.json().review_events.length).to.be.at.least(2));'

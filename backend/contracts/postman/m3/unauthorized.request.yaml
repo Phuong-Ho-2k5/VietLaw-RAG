@@ -1,0 +1,11 @@
+$kind: http-request
+order: 3000
+method: GET
+url: '{{base_url}}/api/v1/admin/jobs/00000000-0000-0000-0000-000000000000'
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 401", () => pm.response.to.have.status(401));
+
+    pm.test("error envelope", () => { const b=pm.response.json(); pm.expect(b.error.code).to.eql("INVALID_TOKEN");
+    pm.expect(b.request_id).to.be.a("string"); });'

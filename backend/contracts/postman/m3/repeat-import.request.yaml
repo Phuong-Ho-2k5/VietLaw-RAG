@@ -1,0 +1,18 @@
+$kind: http-request
+order: 6000
+method: POST
+url: '{{base_url}}/api/v1/admin/imports'
+body:
+  type: json
+  content: '{"release_id": "{{corpus_id}}"}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+- key: Content-Type
+  value: application/json
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 202", () => pm.response.to.have.status(202));
+
+    pm.test("idempotent import", () => pm.expect(pm.response.json().id).to.eql(pm.variables.get("job_id")));'

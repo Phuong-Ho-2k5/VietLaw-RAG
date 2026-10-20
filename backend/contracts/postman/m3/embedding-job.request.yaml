@@ -1,0 +1,18 @@
+$kind: http-request
+order: 9000
+method: POST
+url: '{{base_url}}/api/v1/admin/embedding-jobs'
+body:
+  type: json
+  content: '{"corpus_snapshot_id": "{{corpus_id}}", "embedding_profile_id": "{{profile_id}}"}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+- key: Content-Type
+  value: application/json
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 202", () => pm.response.to.have.status(202));
+
+    pm.test("real embeddings complete", () => pm.expect(pm.response.json().state).to.eql("succeeded"));'

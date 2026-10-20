@@ -1,0 +1,18 @@
+$kind: http-request
+order: 14000
+method: POST
+url: '{{base_url}}/api/v1/admin/serving-snapshots/{{serving_id}}/activate'
+body:
+  type: json
+  content: '{"expected_active_id": null}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+- key: Content-Type
+  value: application/json
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 409", () => pm.response.to.have.status(409));
+
+    pm.test("compare-and-swap conflict", () => pm.expect(pm.response.json().error.code).to.eql("ACTIVE_CONFLICT"));'
