@@ -1,0 +1,19 @@
+$kind: http-request
+order: 12000
+method: POST
+url: '{{base_url}}/api/v1/admin/serving-snapshots/{{serving_id}}/review'
+body:
+  type: json
+  content: '{"decision": "approve", "note": "Local Postman operational review; original
+    M1 reviewer preserved"}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+- key: Content-Type
+  value: application/json
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    pm.test("approved", () => pm.expect(pm.response.json().state).to.eql("approved"));'

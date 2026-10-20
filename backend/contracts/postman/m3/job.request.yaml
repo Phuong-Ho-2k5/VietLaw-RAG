@@ -1,0 +1,13 @@
+$kind: http-request
+order: 7000
+method: GET
+url: '{{base_url}}/api/v1/admin/jobs/{{job_id}}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    pm.test("ten checkpoints", () => pm.expect(pm.response.json().counts.succeeded).to.eql(10));'

@@ -1,0 +1,49 @@
+name: vietlaw-m3
+services:
+  db:
+    image: pgvector/pgvector:0.8.2-pg17@sha256:feb68f4f15446397d8cac7f4fe48fe4586de83160d1fc48b46283312d1a33966
+    environment:
+      POSTGRES_USER: vietlaw_owner
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: vietlaw
+    ports: ["127.0.0.1:${DB_PORT:-55432}:5432"]
+    volumes: ["m3_pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vietlaw_owner -d vietlaw"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  migrate:
+    image: vietlaw-m3:local
+    build: {context: .., dockerfile: backend/Dockerfile}
+    environment:
+      DATABASE_URL: postgresql+psycopg://vietlaw_owner:${POSTGRES_PASSWORD}@db:5432/vietlaw
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      PROVISION_RUNTIME_PASSWORD: ${RUNTIME_PASSWORD:?set RUNTIME_PASSWORD}
+    command: ["sh", "-c", "python -m alembic -c backend/alembic.ini upgrade head && python -m app.db.bootstrap"]
+    depends_on:
+      db: {condition: service_healthy}
+  api:
+    image: vietlaw-m3:local
+    build: {context: .., dockerfile: backend/Dockerfile}
+    environment: &runtime
+      DATABASE_URL: postgresql+psycopg://vietlaw_app:${RUNTIME_PASSWORD:?set RUNTIME_PASSWORD}@db:5432/vietlaw
+      JWT_SECRET: ${JWT_SECRET}
+      RELEASE_DIR: /runtime/releases
+      MODEL_CACHE: /models
+    ports: ["127.0.0.1:${API_PORT:-8000}:8000"]
+    volumes: ["m3_releases:/runtime/releases"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+  worker:
+    image: vietlaw-m3:local
+    build: {context: .., dockerfile: backend/Dockerfile}
+    environment: *runtime
+    command: ["python", "-m", "app.ingestion.worker"]
+    volumes: ["m3_releases:/runtime/releases", "m3_models:/models"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+volumes:
+  m3_pgdata:
+  m3_releases:
+  m3_models:
