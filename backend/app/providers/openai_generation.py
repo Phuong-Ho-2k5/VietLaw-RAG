@@ -66,6 +66,32 @@ class OpenAIGenerationProvider:
         return max(len(e.encode(text, disallowed_special=())) for e in self.encodings)
 
     def _call(self, model, instructions, payload, schema, output_tokens, deadline):
+        started = time.monotonic()
+        metric = {
+            "requested_model": model,
+            "model": None,
+            "usage": {},
+            "operation": "rewrite" if schema is RewriteResult else "generation",
+            "transport_retries": 0,
+            "attempts": 0,
+            "prompt_version": PROMPT_VERSION,
+            "schema_version": SCHEMA_VERSION,
+            "outcome": "INTERNAL_ERROR",
+        }
+        self.metrics.append(metric)
+        try:
+            result = self._perform_call(
+                model, instructions, payload, schema, output_tokens, deadline, metric
+            )
+            metric["outcome"] = "completed"
+            return result
+        except DomainError as exc:
+            metric["outcome"] = exc.code
+            raise
+        finally:
+            metric["latency_ms"] = round((time.monotonic() - started) * 1000)
+
+    def _perform_call(self, model, instructions, payload, schema, output_tokens, deadline, metric):
         serialized = json.dumps(payload, ensure_ascii=False)
         # Include structured schema and a conservative envelope allowance, not just evidence text.
         estimated = (
@@ -74,12 +100,13 @@ class OpenAIGenerationProvider:
         )
         if estimated > self.settings.input_token_budget:
             raise DomainError("MODEL_INPUT_TOO_LONG", 422)
-        started, retries = time.monotonic(), 0
         for attempt in range(2):
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 raise DomainError("PROVIDER_TIMEOUT", 504)
             try:
+                metric["attempts"] = attempt + 1
+                metric["transport_retries"] = attempt
                 response = self.client.responses.create(
                     model=model,
                     instructions=instructions,
@@ -96,6 +123,10 @@ class OpenAIGenerationProvider:
                     max_output_tokens=output_tokens,
                     timeout=min(self.settings.provider_timeout, remaining),
                 )
+                metric.update(
+                    model=response.model,
+                    usage=response.usage.model_dump() if response.usage else {},
+                )
                 if time.monotonic() >= deadline:
                     raise DomainError("PROVIDER_TIMEOUT", 504)
                 if response.status != "completed":
@@ -110,16 +141,6 @@ class OpenAIGenerationProvider:
                 if not response.output_text:
                     raise DomainError("PROVIDER_INVALID_OUTPUT", 502)
                 parsed = schema.model_validate_json(response.output_text)
-                self.metrics.append(
-                    {
-                        "model": response.model,
-                        "usage": response.usage.model_dump() if response.usage else {},
-                        "latency_ms": round((time.monotonic() - started) * 1000),
-                        "transport_retries": retries,
-                        "prompt_version": PROMPT_VERSION,
-                        "schema_version": SCHEMA_VERSION,
-                    }
-                )
                 return parsed
             except (
                 openai.APITimeoutError,
@@ -160,7 +181,6 @@ class OpenAIGenerationProvider:
                             pass
                 if not retryable or attempt or delay >= deadline - time.monotonic():
                     raise DomainError(code, http_status) from None
-                retries += 1
                 time.sleep(delay)
             except (
                 ValidationError,

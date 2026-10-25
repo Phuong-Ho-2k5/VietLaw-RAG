@@ -1,6 +1,6 @@
 # M4 — RAG API Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:executing-plans` to implement this plan task-by-task. Steps use checkbox syntax for tracking. Đây là kế hoạch đề xuất; chưa triển khai hoặc nghiệm thu M4.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:executing-plans` to implement this plan task-by-task. Checklist dưới đây là kế hoạch được duyệt; xem trạng thái triển khai và bằng chứng hiện tại tại `backend/reports/m4-report.md` trước khi tiếp tục. Code M4 đã được triển khai trên `feat/m4-rag-api`; cổng OpenAI live còn chờ key/model và rà soát câu trả lời.
 
 **Goal:** Cung cấp API hỏi đáp pháp luật lao động bằng tiếng Việt, truy xuất trên snapshot đã pin, trả claims có citation kiểm được và lịch sử nguồn mở lại được.
 

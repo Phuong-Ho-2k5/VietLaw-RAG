@@ -91,6 +91,60 @@ def test_citation_fk_rejects_nonmember(db, admin, corpus_path, monkeypatch):
     turn = reserve_turn(admin, create_conversation(admin).id, "key", "hash", "req")
     chunk = bundle.chunks[0]
     with pytest.raises(DBAPIError), engine().begin() as conn:
-        conn.execute(m.citations.insert().values(id=uuid4(), message_id=turn.message_id,
-            chunk_id=chunk["chunk_id"], version_id=chunk["version_hash"], serving_id="f" * 64,
-            start=chunk["start"], end=chunk["end"], quote=chunk["text"], metadata={}))
+        conn.execute(
+            m.citations.insert().values(
+                id=uuid4(),
+                message_id=turn.message_id,
+                chunk_id=chunk["chunk_id"],
+                version_id=chunk["version_hash"],
+                serving_id="f" * 64,
+                start=chunk["start"],
+                end=chunk["end"],
+                quote=chunk["text"],
+                metadata={},
+            )
+        )
+
+
+def test_expired_key_replay_persists_interrupted_state(db, admin):
+    from app.core.errors import DomainError
+    from app.db import models as m
+    from app.db.session import engine
+
+    conv = create_conversation(admin)
+    turn = reserve_turn(admin, conv.id, "expired", "hash", "first-request")
+    with engine().begin() as conn:
+        conn.execute(
+            m.conversations.update()
+            .where(m.conversations.c.id == conv.id)
+            .values(lease_until=datetime.now(timezone.utc) - timedelta(seconds=1))
+        )
+    with pytest.raises(DomainError, match="TURN_INTERRUPTED"):
+        reserve_turn(admin, conv.id, "expired", "hash", "replay-request")
+    with engine().connect() as conn:
+        row = (
+            conn.execute(select(m.messages).where(m.messages.c.id == turn.message_id))
+            .mappings()
+            .one()
+        )
+    assert row["state"] == "failed"
+
+
+def test_reservation_persists_question_atomically(db, admin):
+    from app.db import models as m
+    from app.db.session import engine
+
+    conv = create_conversation(admin)
+    turn = reserve_turn(admin, conv.id, "key", "hash", "request", question="Original question")
+    with engine().connect() as conn:
+        rows = (
+            conn.execute(
+                select(m.messages)
+                .where(m.messages.c.turn_id == turn.message_id)
+                .order_by(m.messages.c.sequence)
+            )
+            .mappings()
+            .all()
+        )
+    assert rows[0]["text"] == "Original question"
+    assert rows[1]["state"] == "processing"

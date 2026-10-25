@@ -116,7 +116,7 @@ isolated config themselves. A missing DB/model fails the corresponding tests;
 the suite does not silently substitute SQLite or mock embeddings for model smoke.
 
 Model-only: `python -m pytest backend/tests/test_embedding_smoke.py -m model -q`.
-Fast suite: `python -m pytest backend/tests -m "not model" -q`.
+Fast suite: `python -m pytest backend/tests -m "not model and not live and not simulation" -q`.
 
 OpenAPI is generated from the app:
 
@@ -221,7 +221,8 @@ keys replay the stored error. Retry a failed turn with a new key. The response's
 A request pins the active serving snapshot once; activation during generation
 cannot change its sources. New turns can use a new snapshot; historical citation
 URLs keep the old membership. One turn per conversation is processed at once,
-with a 90-second fenced lease and 60-second pipeline deadline. Process interruption
+with a 90-second fenced lease and 60-second pipeline deadline checked at stage
+boundaries. Blocking E5/database operations are not forcibly cancelled. Process interruption
 can cause an upstream call to have happened without a saved answer; exactly-once
 OpenAI calls are not promised.
 

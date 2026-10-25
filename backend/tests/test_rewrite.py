@@ -52,3 +52,28 @@ def test_history_is_bounded_and_not_evidence():
         Capture(),
         time.monotonic() + 5,
     )
+
+
+def test_rewrite_cannot_change_fixed_term_to_indefinite():
+    provider = Rewriter()
+    provider.output = "Hợp đồng không xác định thời hạn có phải bằng văn bản?"
+    original = "Hợp đồng xác định thời hạn có phải bằng văn bản?"
+    result = rewrite_question(
+        original, [HistoryMessage(role="user", text="Về hợp đồng")], provider, time.monotonic() + 5
+    )
+    assert result.standalone_question == original
+    assert result.fallback
+
+
+def test_rewrite_cannot_drop_chua_negation():
+    provider = Rewriter()
+    provider.output = "Tôi đã nhận được 20 triệu tiền lương."
+    original = "Tôi chưa nhận được 20 triệu tiền lương."
+    result = rewrite_question(
+        original,
+        [HistoryMessage(role="user", text="Về tiền lương")],
+        provider,
+        time.monotonic() + 5,
+    )
+    assert result.standalone_question == original
+    assert result.fallback

@@ -99,3 +99,23 @@ def test_transport_retry_deadline(monkeypatch, status, want_calls):
         provider.generate("Q", ContextBundle(), [], time.monotonic() + 5)
     assert len(calls) == want_calls
     assert "secret" not in str(error.value)
+
+
+def test_failed_provider_call_retains_sanitized_retry_metrics(monkeypatch):
+    provider = make_provider(
+        monkeypatch,
+        lambda r: httpx.Response(
+            429,
+            headers={"Retry-After": "0"},
+            json={"error": {"message": "sensitive upstream text"}},
+        ),
+    )
+    with pytest.raises(DomainError):
+        provider.generate("Q", ContextBundle(), [], time.monotonic() + 60)
+    assert len(provider.metrics) == 1
+    metric = provider.metrics[0]
+    assert metric["transport_retries"] == 1
+    assert metric["outcome"] == "PROVIDER_UNAVAILABLE"
+    assert metric["requested_model"] == "gpt-4.1-mini"
+    assert metric["latency_ms"] >= 0
+    assert "sensitive upstream text" not in json.dumps(metric)

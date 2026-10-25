@@ -24,12 +24,12 @@ def send_message(owner_id: UUID, conversation_id: UUID, body, idempotency_key, r
         idempotency_key,
         canonical_hash(body.model_dump(mode="json")),
         request_id,
+        question=body.question,
     )
     if turn.replay is not None:
         return ChatResult.model_validate(turn.replay)
     trace, provider = {"request_id": request_id, "mode": body.mode}, None
     try:
-        repository.save_question(turn, body.question)
         context = pin_active()
         trace.update(
             corpus_snapshot_id=context.corpus_id,
@@ -55,11 +55,13 @@ def send_message(owner_id: UUID, conversation_id: UUID, body, idempotency_key, r
                 query = rewritten.standalone_question
                 # Rewritten/history facts cannot introduce an unverified legal date.
                 checked_date = resolve_date(query, temporal.as_of_date, previous, context)
-                clarification = (
-                    rewritten.reason
-                    if rewritten.needs_clarification
-                    else (checked_date.clarification)
-                )
+                clarification = checked_date.clarification
+                if rewritten.needs_clarification:
+                    clarification = (
+                        clarification
+                        or rewritten.reason.strip()
+                        or ("Bạn muốn hỏi cụ thể về trường hợp nào?")
+                    )
             else:
                 clarification = None
             if clarification:

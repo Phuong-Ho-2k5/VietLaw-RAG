@@ -155,7 +155,9 @@ def test_historical_citation_survives_activation(client, admin, corpus_path, mon
     payload = json.loads(corpus_path.read_text(encoding="utf-8"))
     # A disjoint membership proves source reopening doesn't accidentally use the new snapshot.
     payload["chunks"] = [c for c in payload["chunks"] if c["article_label"] != "13"]
-    payload["manifest_hash"] = canonical_hash({k: v for k, v in payload.items() if k != "manifest_hash"})
+    payload["manifest_hash"] = canonical_hash(
+        {k: v for k, v in payload.items() if k != "manifest_hash"}
+    )
     other = tmp_path / "other.json"
     other.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
     corpus, profile = prepare_corpus(admin, other, monkeypatch)
@@ -168,15 +170,61 @@ def test_historical_citation_survives_activation(client, admin, corpus_path, mon
             return super().generate(*args)
 
     monkeypatch.setattr(openai_generation, "get_generation_provider", SwitchDuringGeneration)
-    response = client.post(f"/api/v1/conversations/{conv}/messages",
+    response = client.post(
+        f"/api/v1/conversations/{conv}/messages",
         headers=dict(headers, **{"Idempotency-Key": "switch"}),
-        json={"question": "hợp đồng", "mode": "keyword", "topic": "contract"})
+        json={"question": "hợp đồng", "mode": "keyword", "topic": "contract"},
+    )
     assert response.status_code == 200, response.text
     result = response.json()
     assert result["serving_snapshot_id"] == old.serving_id
     assert pin_active().serving_id == replacement["id"]
     for citation in result["citations"]:
-        opened = client.get(f'/api/v1/messages/{result["message_id"]}/citations/{citation["id"]}',
-                            headers=headers).json()
+        opened = client.get(
+            f"/api/v1/messages/{result['message_id']}/citations/{citation['id']}", headers=headers
+        ).json()
         assert opened["quote"] == citation["quote"]
         assert opened["serving_snapshot_id"] == old.serving_id
+
+
+def test_empty_clarification_reason_still_prevents_generation(
+    client, admin, corpus_path, monkeypatch
+):
+    from app.providers import openai_generation
+
+    _, headers, conv = chat_setup(client, admin, corpus_path, monkeypatch)
+    endpoint = f"/api/v1/conversations/{conv}/messages"
+    payload = {"question": "hợp đồng", "mode": "keyword"}
+    assert (
+        client.post(
+            endpoint, headers=dict(headers, **{"Idempotency-Key": "first"}), json=payload
+        ).status_code
+        == 200
+    )
+
+    class Ambiguous(ChatProvider):
+        def rewrite(self, question, history, deadline):
+            return RewriteResult(standalone_question=question, needs_clarification=True, reason="")
+
+        def generate(self, *args):
+            raise AssertionError("Ambiguity must not call generation")
+
+    monkeypatch.setattr(openai_generation, "get_generation_provider", Ambiguous)
+    response = client.post(
+        endpoint, headers=dict(headers, **{"Idempotency-Key": "second"}), json=payload
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["status"] == "needs_clarification"
+    assert response.json()["answer"].strip()
+
+
+def test_malformed_conversation_cursor_is_validation_error(client, admin):
+    from app.auth.tokens import issue_token
+    from app.chat.repository import encode_cursor
+
+    response = client.get(
+        "/api/v1/conversations",
+        params={"cursor": encode_cursor(["2026-02-12T00:00:00+00:00", 123])},
+        headers={"Authorization": "Bearer " + issue_token(admin)},
+    )
+    assert response.status_code == 422

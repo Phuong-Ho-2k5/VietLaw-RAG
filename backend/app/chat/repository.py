@@ -2,6 +2,7 @@
 
 import base64
 import json
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from uuid import UUID, uuid4
 
@@ -45,8 +46,24 @@ def create_conversation(owner_id: UUID) -> ConversationDTO:
         return ConversationDTO(**row)
 
 
-def reserve_turn(owner_id, conversation_id, key, request_hash, request_id) -> ReservedTurn:
+@contextmanager
+def reservation_transaction():
+    # Recovery is durable even when the current request replays a failed key.
+    # Only domain rejections commit; database/unexpected exceptions still roll back.
+    rejected = None
     with engine().begin() as conn:
+        try:
+            yield conn
+        except DomainError as exc:
+            rejected = exc
+    if rejected is not None:
+        raise rejected
+
+
+def reserve_turn(
+    owner_id, conversation_id, key, request_hash, request_id, question=""
+) -> ReservedTurn:
+    with reservation_transaction() as conn:
         conv = owned(conn, owner_id, conversation_id, True)
         now = datetime.now(timezone.utc)
         if conv["in_flight_message_id"] and conv["lease_until"] <= now:
@@ -102,6 +119,7 @@ def reserve_turn(owner_id, conversation_id, key, request_hash, request_id) -> Re
                     role=role,
                     sequence=seq,
                     state="processing" if role == "assistant" else "completed",
+                    text=question if role == "user" else "",
                     request_id=request_id,
                     idempotency_key=key if role == "assistant" else None,
                     request_hash=request_hash if role == "assistant" else None,
@@ -118,15 +136,6 @@ def reserve_turn(owner_id, conversation_id, key, request_hash, request_id) -> Re
             )
         )
         return ReservedTurn(conversation_id=conversation_id, message_id=message_id, fence=fence)
-
-
-def save_question(turn, question):
-    with engine().begin() as conn:
-        conn.execute(
-            m.messages.update()
-            .where(m.messages.c.turn_id == turn.message_id, m.messages.c.role == "user")
-            .values(text=question)
-        )
 
 
 def finalize_turn(turn, result, trace):
@@ -193,7 +202,14 @@ def list_conversations(owner_id, limit=20, cursor=None):
     stmt = select(m.conversations).where(m.conversations.c.owner_id == owner_id)
     if cursor:
         try:
-            stamp, identifier = decode_cursor(cursor)
+            decoded = decode_cursor(cursor)
+            if (
+                not isinstance(decoded, list)
+                or len(decoded) != 2
+                or any(not isinstance(item, str) for item in decoded)
+            ):
+                raise ValueError("Invalid cursor types")
+            stamp, identifier = decoded
             stamp, identifier = datetime.fromisoformat(stamp), UUID(identifier)
         except (ValueError, TypeError):
             raise DomainError("INVALID_CURSOR", 422) from None
