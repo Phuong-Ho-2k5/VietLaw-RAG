@@ -1,0 +1,21 @@
+$kind: http-request
+order: 6000
+method: POST
+url: '{{base_url}}/api/v1/search'
+body:
+  type: json
+  content: '{"query": "hợp đồng", "mode": "hybrid", "as_of_date": "2026-02-12", "top_k":
+    5}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+- key: Content-Type
+  value: application/json
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    const b=pm.response.json(); pm.test("pinned candidates",()=>{ pm.expect(b.length).to.be.above(0);
+    b.forEach(c=>pm.expect(c.serving_snapshot_id).to.eql(pm.variables.get("serving_id")));
+    });'

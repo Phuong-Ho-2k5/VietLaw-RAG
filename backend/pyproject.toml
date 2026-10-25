@@ -4,13 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vietlaw-backend"
-version = "0.3.0"
+version = "0.4.0"
 requires-python = ">=3.10,<3.14"
 dependencies = [
-  "fastapi>=0.115,<1", "uvicorn>=0.34,<1", "pydantic-settings>=2.8,<3",
-  "sqlalchemy>=2.0.40,<2.1", "alembic>=1.15,<2", "psycopg[binary]>=3.2,<4",
-  "pgvector>=0.4,<0.5", "argon2-cffi>=23,<26", "PyJWT>=2.10,<3",
-  "sentence-transformers>=3.4,<6", "numpy>=1.26,<3", "torch>=2.6,<3"
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.34,<1",
+  "pydantic-settings>=2.8,<3",
+  "sqlalchemy>=2.0.40,<2.1",
+  "alembic>=1.15,<2",
+  "psycopg[binary]>=3.2,<4",
+  "pgvector>=0.4,<0.5",
+  "argon2-cffi>=23,<26",
+  "PyJWT>=2.10,<3",
+  "sentence-transformers>=3.4,<6",
+  "numpy>=1.26,<3",
+  "torch>=2.6,<3",
+  "openai>=2,<3",
+  "tiktoken>=0.9,<1",
 ]
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "httpx>=0.28,<1", "ruff>=0.11,<1"]
@@ -19,7 +29,9 @@ where = ["."]
 include = ["app*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["model: requires cached real embedding model"]
+markers = ["model: requires cached real embedding model", "live: opt-in real OpenAI API",
+           "simulation: requires a running local Postman simulation"]
+addopts = "-m 'not live and not simulation'"
 [tool.ruff]
 target-version = "py310"
 line-length = 100

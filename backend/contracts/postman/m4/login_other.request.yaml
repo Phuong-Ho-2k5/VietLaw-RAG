@@ -1,0 +1,19 @@
+$kind: http-request
+order: 3000
+method: POST
+url: '{{base_url}}/api/v1/auth/token'
+body:
+  type: json
+  content: '{{login_body}}'
+headers:
+- key: Content-Type
+  value: application/json
+scripts:
+- type: beforeRequest
+  language: text/javascript
+  code: pm.variables.set("login_body", JSON.stringify({username:pm.variables.get("username_other"),password:pm.variables.get("password")}));
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    pm.variables.set("token_other",pm.response.json().access_token);'

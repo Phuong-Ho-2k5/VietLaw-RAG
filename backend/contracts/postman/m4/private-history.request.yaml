@@ -1,0 +1,13 @@
+$kind: http-request
+order: 16000
+method: GET
+url: '{{base_url}}/api/v1/conversations/{{conversation_id}}/messages'
+headers:
+- key: Authorization
+  value: Bearer {{token_other}}
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 404", () => pm.response.to.have.status(404));
+
+    '

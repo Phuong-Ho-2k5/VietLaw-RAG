@@ -11,16 +11,18 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     admin = commands.add_parser("create-admin")
     admin.add_argument("--username", required=True)
+    user = commands.add_parser("create-user")
+    user.add_argument("--username", required=True)
     release = commands.add_parser("register-release")
     release.add_argument("path")
     commands.add_parser("prepare-model")
     commands.add_parser("register-profile")
     args = parser.parse_args()
-    if args.command == "create-admin":
+    if args.command in ("create-admin", "create-user"):
         password = getpass.getpass("Password (12–256 characters): ")
         if password != getpass.getpass("Confirm password: "):
             parser.error("Passwords do not match")
-        print(create_user(args.username, password))
+        print(create_user(args.username, password, "user" if args.command == "create-user" else "admin"))
     elif args.command == "register-release":
         from pathlib import Path
 

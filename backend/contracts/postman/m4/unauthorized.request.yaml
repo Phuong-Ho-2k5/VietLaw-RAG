@@ -1,0 +1,10 @@
+$kind: http-request
+order: 1000
+method: GET
+url: '{{base_url}}/api/v1/conversations'
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 401", () => pm.response.to.have.status(401));
+
+    '

@@ -29,7 +29,7 @@ try:
     command.upgrade(alembic, "head")
     db = create_engine(url, hide_parameters=True)
     with db.connect() as conn:
-        assert conn.scalar(text("SELECT version_num FROM alembic_version")) == "0003"
+        assert conn.scalar(text("SELECT version_num FROM alembic_version")) == "0004"
         from app.db.models import metadata
 
         actual = set(

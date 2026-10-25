@@ -1,0 +1,13 @@
+$kind: http-request
+order: 12000
+method: GET
+url: '{{base_url}}/api/v1/messages/{{message_id}}/citations/{{citation_id}}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    pm.test("same historical quote",()=>pm.expect(pm.response.json().quote).to.eql(pm.variables.get("quote")));'

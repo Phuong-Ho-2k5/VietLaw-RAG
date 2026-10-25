@@ -1,0 +1,13 @@
+$kind: http-request
+order: 13000
+method: GET
+url: '{{base_url}}/api/v1/conversations/{{conversation_id}}/messages?limit=2'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    const b=pm.response.json();pm.test("paged history",()=>{pm.expect(b.items.length).to.eql(2);pm.expect(b.next_cursor).to.be.a("string");});pm.variables.set("cursor",encodeURIComponent(b.next_cursor));'

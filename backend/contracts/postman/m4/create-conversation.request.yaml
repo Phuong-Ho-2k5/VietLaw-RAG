@@ -1,0 +1,13 @@
+$kind: http-request
+order: 7000
+method: POST
+url: '{{base_url}}/api/v1/conversations'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 201", () => pm.response.to.have.status(201));
+
+    pm.variables.set("conversation_id",pm.response.json().id);'

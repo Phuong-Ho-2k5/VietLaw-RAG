@@ -42,19 +42,30 @@ Phiên bản đầu tiên tập trung vào:
 
 ## Trạng thái
 
-M0 đã kiểm kê ZIP; M1 đã tạo corpus v1 gồm 10 chunk được đối chiếu nguồn, thuộc đủ 5 chủ đề và pin phạm vi pháp luật tại **12/02/2026**. M2 đã bổ sung bộ đánh giá 72 câu (36 dev/36 test), seed 12 câu lấy từ dev, gold theo điều/khoản và chunk ID, cùng validator và freeze manifest. Reviewer nội dung được ghi rõ là Codex (assistant). Đây là corpus lõi nhỏ; các ứng viên còn lại tiếp tục nằm trong hàng rà soát. M3 đã hoàn tất nền tảng backend, ingestion, embedding và quản lý snapshot; API hỏi đáp RAG và giao diện thuộc các milestone tiếp theo.
+M0 đã kiểm kê ZIP; M1 đã tạo corpus v1 gồm 10 chunk được đối chiếu nguồn, thuộc đủ 5 chủ đề và pin phạm vi pháp luật tại **12/02/2026**. M2 đã bổ sung bộ đánh giá 72 câu (36 dev/36 test), seed 12 câu lấy từ dev, gold theo điều/khoản và chunk ID, cùng validator và freeze manifest. Reviewer nội dung được ghi rõ là Codex (assistant). Đây là corpus lõi nhỏ; các ứng viên còn lại tiếp tục nằm trong hàng rà soát. M3 đã hoàn tất nền tảng backend, ingestion, embedding và quản lý snapshot. M4 đã bổ sung RAG API, kiểm citation và lịch sử; nghiệm thu OpenAI thật cần cấu hình key/model và chạy smoke riêng. Giao diện thuộc M5.
 
 ## Backend M3
 
 M3 đã triển khai FastAPI, PostgreSQL/pgvector, auth admin, job nhập corpus có
 checkpoint/retry, embedding E5 local và snapshot phục vụ bất biến với activate
-nguyên tử. Giữ nguyên corpus/chunk ID của M1 và freeze M2. Chat RAG và giao diện
-được triển khai ở các mốc tiếp theo.
+nguyên tử. Giữ nguyên corpus/chunk ID của M1 và freeze M2.
 
 Xem [hướng dẫn backend](backend/README.md), [kế hoạch M3](backend/M3_PLAN.md)
 và [báo cáo nghiệm thu M3](backend/reports/m3-report.md). M3 đã được kiểm tra bằng
 52 tests backend, 45 tests dữ liệu/đánh giá, 30 assertions Postman trên API thật
 và luồng Docker Compose với embedding thật.
+
+## Backend M4
+
+M4 có keyword/vector/hybrid retrieval (RRF), rewrite nhiều lượt, context có budget,
+OpenAI Responses generation, kiểm source IDs/quote/canonical span và API
+conversation/history/source/trace theo owner. E5 local tiếp tục phục vụ embedding;
+snapshot được pin một lần mỗi lượt, nguồn lịch sử giữ nguyên sau activate.
+
+Xem [kế hoạch M4](backend/M4_PLAN.md), [hướng dẫn chạy](backend/README.md#m4-rag-api)
+và [báo cáo M4](backend/reports/m4-report.md). API key và model OpenAI phải cấu hình
+trong môi trường; kết quả mô phỏng không chứng minh truy cập OpenAI thật hoặc
+chất lượng suy luận pháp lý. Đánh giá test giữ riêng thuộc M6.
 
 ## Dữ liệu đánh giá M2
 

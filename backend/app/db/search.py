@@ -11,7 +11,7 @@ from app.domain.serving_reader import validate_context
 from app.providers.embedding import checked_vector
 
 
-def candidates(context, as_of_date, limit, score, filter_expression=None):
+def candidates(context, as_of_date, limit, score, filter_expression=None, topic=None):
     if not 1 <= limit <= 100:
         raise DomainError("INVALID_LIMIT", 422)
     statement = (
@@ -32,6 +32,8 @@ def candidates(context, as_of_date, limit, score, filter_expression=None):
     )
     if filter_expression is not None:
         statement = statement.where(filter_expression)
+    if topic is not None:
+        statement = statement.where(m.retrieval_chunks.c.payload["topic_tags"].contains([topic]))
     with engine().connect() as conn:
         validate_context(conn, context, as_of_date)
         rows = (
@@ -52,13 +54,13 @@ def candidates(context, as_of_date, limit, score, filter_expression=None):
         ]
 
 
-def vector_candidates(context, vector: list[float], as_of_date: date, limit: int = 5):
+def vector_candidates(context, vector: list[float], as_of_date: date, limit: int = 5, topic=None):
     vector = checked_vector(vector, context.dimension)
     score = 1 - m.chunk_embeddings.c.vector.cosine_distance(vector)
-    return candidates(context, as_of_date, limit, score)
+    return candidates(context, as_of_date, limit, score, topic=topic)
 
 
-def keyword_candidates(context, query: str, as_of_date: date, limit: int = 5):
+def keyword_candidates(context, query: str, as_of_date: date, limit: int = 5, topic=None):
     if not query.strip() or len(query) > 4000:
         raise DomainError("INVALID_QUERY", 422)
     config = literal_column("'simple'::regconfig")
@@ -72,4 +74,5 @@ def keyword_candidates(context, query: str, as_of_date: date, limit: int = 5):
         limit,
         func.ts_rank(text_vector, tsquery),
         text_vector.op("@@")(tsquery),
+        topic,
     )

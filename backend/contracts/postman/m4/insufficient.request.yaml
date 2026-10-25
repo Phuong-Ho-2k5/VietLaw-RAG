@@ -1,0 +1,20 @@
+$kind: http-request
+order: 20000
+method: POST
+url: '{{base_url}}/api/v1/conversations/{{conversation_id}}/messages'
+body:
+  type: json
+  content: '{"question": "__abstain__", "mode": "hybrid"}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+- key: Idempotency-Key
+  value: insufficient
+- key: Content-Type
+  value: application/json
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    pm.test("safe status",()=>pm.expect(pm.response.json().status).to.eql("insufficient_evidence"));'
