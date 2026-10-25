@@ -1,0 +1,20 @@
+$kind: http-request
+order: 10000
+method: POST
+url: '{{base_url}}/api/v1/conversations/{{conversation_id}}/messages'
+body:
+  type: json
+  content: '{"question": "khác", "mode": "hybrid"}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+- key: Idempotency-Key
+  value: answer-1
+- key: Content-Type
+  value: application/json
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 409", () => pm.response.to.have.status(409));
+
+    '

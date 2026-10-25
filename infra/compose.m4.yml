@@ -1,0 +1,13 @@
+# Merge with compose.m3.yml; keep its project/volumes when upgrading existing runtime.
+services:
+  api:
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?set OPENAI_API_KEY}
+      OPENAI_MODEL: ${OPENAI_MODEL:?set an explicit Responses model ID}
+      OPENAI_REWRITE_MODEL: ${OPENAI_REWRITE_MODEL:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+    volumes:
+      - type: bind
+        source: ../backend/.model-cache
+        target: /models
+        read_only: true

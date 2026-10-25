@@ -1,0 +1,20 @@
+$kind: http-request
+order: 19000
+method: POST
+url: '{{base_url}}/api/v1/conversations/{{conversation_id}}/messages'
+body:
+  type: json
+  content: '{"question": "Luật hiện nay?", "mode": "hybrid"}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+- key: Idempotency-Key
+  value: date
+- key: Content-Type
+  value: application/json
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    pm.test("safe status",()=>pm.expect(pm.response.json().status).to.eql("needs_clarification"));'

@@ -10,7 +10,7 @@ from app.db.session import engine
 bearer = HTTPBearer(auto_error=False)
 
 
-def require_admin(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)):
+def require_user(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)):
     if not credentials or credentials.scheme.lower() != "bearer":
         raise DomainError("INVALID_TOKEN", 401)
     identifier = read_token(credentials.credentials)
@@ -18,6 +18,10 @@ def require_admin(credentials: HTTPAuthorizationCredentials | None = Depends(bea
         user = conn.execute(select(users).where(users.c.id == identifier)).mappings().first()
     if not user or user["disabled"]:
         raise DomainError("INVALID_TOKEN", 401)
+    return user
+
+
+def require_admin(user=Depends(require_user)):
     if user["role"] != "admin":
         raise DomainError("ADMIN_REQUIRED", 403)
     return user

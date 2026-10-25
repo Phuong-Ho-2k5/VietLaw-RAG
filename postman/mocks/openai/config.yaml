@@ -1,0 +1,11 @@
+version: 1
+name: OpenAI Responses subset
+slug: openai-responses-subset
+protocol: http
+port: 4500
+interceptRequests: true
+origin: api.openai.com
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true

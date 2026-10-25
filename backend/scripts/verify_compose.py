@@ -27,6 +27,8 @@ def main():
                 "JWT_SECRET=" + secrets.token_hex(32),
                 "API_PORT=18004",
                 "DB_PORT=55434",
+                "OPENAI_API_KEY=local-simulation-only",
+                "OPENAI_MODEL=gpt-4.1-mini",
             ]
         )
         + "\n",
@@ -37,6 +39,10 @@ def main():
         yaml.safe_dump(
             {
                 "services": {
+                    "api": {
+                        "volumes": [{"type": "bind", "source": str(ROOT / "backend/.model-cache"),
+                                     "target": "/models", "read_only": True}]
+                    },
                     "worker": {
                         "volumes": [
                             {
@@ -62,6 +68,8 @@ def main():
         "-f",
         str(ROOT / "infra/compose.m3.yml"),
         "-f",
+        str(ROOT / "infra/compose.m4.yml"),
+        "-f",
         str(override),
     ]
 
@@ -85,16 +93,18 @@ def main():
     base = "http://127.0.0.1:18004"
     token = None
 
-    def request(path, body=None, authenticated=True):
+    def request(path, body=None, authenticated=True, extra_headers=None):
         headers = {"Content-Type": "application/json"}
         if authenticated:
             headers["Authorization"] = "Bearer " + token
+        headers.update(extra_headers or {})
         req = urllib.request.Request(
             base + path,
             data=json.dumps(body).encode() if body is not None else None,
             headers=headers,
         )
-        with urllib.request.urlopen(req, timeout=10) as response:
+        # First API-side E5 query includes cold Python/model loading in the container.
+        with urllib.request.urlopen(req, timeout=90) as response:
             return json.load(response)
 
     try:
@@ -169,7 +179,14 @@ def main():
             input="from datetime import date\nfrom app.domain.serving_reader import pin_active,read_chunks\nassert len(read_chunks(pin_active(),date(2026,2,12)))==10\nprint('Pinned reader: 10 chunks')\n",
         )
         print(result)
-        print("Clean Compose API/DB/worker + real embedding/review/activation: PASS")
+        candidates = request("/api/v1/search", {"query": "hợp đồng", "mode": "vector",
+                                               "as_of_date": "2026-02-12"})
+        assert candidates and candidates[0]["serving_snapshot_id"] == snapshot["id"]
+        conversation = request("/api/v1/conversations", {})
+        clarification = request("/api/v1/conversations/" + conversation["id"] + "/messages",
+            {"question": "Luật hiện nay?"}, extra_headers={"Idempotency-Key": "compose-date"})
+        assert clarification["status"] == "needs_clarification"
+        print("Clean Compose + real E5 query + chat date policy: PASS (no live OpenAI call)")
     finally:
         teardown = subprocess.run(
             [*compose, "down", "--volumes"], cwd=ROOT, capture_output=True, text=True, check=False

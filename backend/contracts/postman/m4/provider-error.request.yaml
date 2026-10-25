@@ -1,0 +1,20 @@
+$kind: http-request
+order: 21000
+method: POST
+url: '{{base_url}}/api/v1/conversations/{{conversation_id}}/messages'
+body:
+  type: json
+  content: '{"question": "__500__", "mode": "hybrid"}'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+- key: Idempotency-Key
+  value: provider-error
+- key: Content-Type
+  value: application/json
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 503", () => pm.response.to.have.status(503));
+
+    pm.test("technical error",()=>{const b=pm.response.json();pm.expect(b.error.code).to.eql("PROVIDER_UNAVAILABLE");pm.expect(b.request_id).to.be.a("string");});'

@@ -1,0 +1,13 @@
+$kind: http-request
+order: 15000
+method: GET
+url: '{{base_url}}/api/v1/messages/{{message_id}}/trace'
+headers:
+- key: Authorization
+  value: Bearer {{token}}
+scripts:
+- type: afterResponse
+  language: text/javascript
+  code: 'pm.test("HTTP 200", () => pm.response.to.have.status(200));
+
+    pm.test("trace pin",()=>pm.expect(pm.response.json().serving_snapshot_id).to.eql(pm.variables.get("serving_id")));'
